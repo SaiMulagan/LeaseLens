@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LeaseLens · Lease Intake</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f6fa; --surface:#ffffff; --surface2:#f8fafc;
+    --ink:#0f172a; --ink2:#334155; --muted:#64748b; --faint:#94a3b8;
+    --line:#eaeef4; --line2:#dde4ee;
+    --brand:#2563eb; --brand-ink:#1d4ed8; --brand-soft:#eef3ff;
+    --clean:#059669; --clean-soft:#e7f6f0;
+    --minor:#d97706; --minor-soft:#fdf2e3;
+    --major:#dc2626; --major-soft:#fdeaea;
+    --violet:#7c3aed; --violet-soft:#f1ecfe;
+    --side1:#0f172a; --side2:#1b2638;
+    --shadow:0 1px 2px rgba(15,23,42,.04),0 6px 20px rgba(15,23,42,.05);
+    --shadow-lg:0 16px 44px rgba(15,23,42,.16);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.55 "Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:var(--brand);text-decoration:none}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:#cdd6e3;border-radius:10px;border:2px solid transparent;background-clip:content-box}
+
+  .app{display:grid;grid-template-columns:244px 1fr;min-height:100vh}
+  .side{background:linear-gradient(180deg,var(--side1),var(--side2));color:#c4cee0;
+    padding:20px 15px;display:flex;flex-direction:column;gap:5px;position:sticky;top:0;height:100vh}
+  .brand{display:flex;align-items:center;gap:11px;padding:6px 8px 18px}
+  .brand .mark{width:34px;height:34px;border-radius:9px;flex:none;
+    background:linear-gradient(135deg,#3b82f6,var(--brand));display:grid;place-items:center}
+  .brand .mark svg{width:19px;height:19px}
+  .brand .name{font-weight:700;font-size:17px;color:#fff;letter-spacing:-.01em}
+  .brand .sub{font-size:11px;color:#7e8ca6}
+  .navlabel{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#6b7a96;padding:14px 10px 6px;font-weight:600}
+  .nav{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;cursor:pointer;
+    color:#bcc8dd;font-weight:500;font-size:13.5px;transition:.15s}
+  .nav:hover{background:rgba(255,255,255,.06);color:#fff}
+  .nav.active{background:rgba(59,130,246,.16);color:#fff;box-shadow:inset 0 0 0 1px rgba(59,130,246,.32)}
+  .nav .ico{width:17px;height:17px;flex:none;opacity:.9}
+  .nav .ct{margin-left:auto;font-size:11.5px;color:#8593ad;background:rgba(255,255,255,.06);padding:1px 8px;border-radius:999px;min-width:24px;text-align:center}
+  .nav.active .ct{color:#dbe6ff;background:rgba(59,130,246,.28)}
+  .side .foot{margin-top:auto;padding-top:12px}
+  .profilebox{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:11px 12px}
+  .profilebox .t{font-size:10.5px;color:#7e8ca6;text-transform:uppercase;letter-spacing:.06em}
+  .profilebox .v{display:flex;align-items:center;gap:7px;font-weight:600;color:#fff;margin-top:3px;font-size:13px}
+  .dotlive{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 0 3px rgba(52,211,153,.2)}
+
+  .main{padding:24px 30px 40px;min-width:0}
+  .topbar{display:flex;align-items:flex-end;gap:14px;margin-bottom:20px}
+  .topbar h1{margin:0;font-size:21px;font-weight:700;letter-spacing:-.02em}
+  .topbar p{margin:3px 0 0;color:var(--muted);font-size:13px}
+  .grow{flex:1}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--brand);color:#fff;border:0;padding:10px 15px;border-radius:10px;
+    font-weight:600;cursor:pointer;font-size:13px;box-shadow:0 5px 14px rgba(37,99,235,.24);transition:.15s}
+  .btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
+  .btn svg{width:16px;height:16px}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line2);box-shadow:var(--shadow)}
+  .btn.good{background:var(--clean);box-shadow:0 5px 14px rgba(5,150,105,.24)}
+  .btn.warn{background:#fff;color:var(--minor);border:1px solid #ecd3a6;box-shadow:none}
+  .select{position:relative}
+  select{appearance:none;background:#fff;border:1px solid var(--line2);color:var(--ink);border-radius:10px;
+    padding:10px 32px 10px 13px;font-size:13px;font-weight:500;cursor:pointer;box-shadow:var(--shadow);font-family:inherit}
+  .select::after{content:"";position:absolute;right:13px;top:50%;width:8px;height:8px;border-right:2px solid var(--muted);
+    border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+
+  .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;margin-bottom:22px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;box-shadow:var(--shadow);position:relative}
+  .stat .n{font-size:25px;font-weight:700;letter-spacing:-.02em;line-height:1}
+  .stat .l{color:var(--muted);font-size:12px;margin-top:5px;font-weight:500}
+  .stat .ic{position:absolute;top:13px;right:13px;width:30px;height:30px;border-radius:9px;display:grid;place-items:center}
+  .stat .ic svg{width:16px;height:16px}
+
+  .grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(380px,1fr);gap:18px;align-items:start}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .card .hd{display:flex;align-items:center;gap:10px;padding:15px 18px;border-bottom:1px solid var(--line)}
+  .card .hd h2{margin:0;font-size:14px;font-weight:700}
+  .card .hd .cnt{color:var(--muted);font-weight:500;font-size:13px}
+
+  .chips{display:flex;gap:7px;padding:13px 18px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--surface2)}
+  .chip{font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;border:1px solid var(--line2);background:#fff;color:var(--ink2);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:7px}
+  .chip:hover{border-color:var(--brand);color:var(--brand)}
+  .chip.active{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 3px 9px rgba(37,99,235,.22)}
+  .chip .b{font-size:11px;background:rgba(0,0,0,.06);padding:0 7px;border-radius:999px}
+  .chip.active .b{background:rgba(255,255,255,.22)}
+
+  table{width:100%;border-collapse:collapse}
+  thead th{text-align:left;padding:11px 18px;color:var(--muted);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;background:var(--surface2);border-bottom:1px solid var(--line)}
+  tbody td{padding:13px 18px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle}
+  tbody tr{cursor:pointer;transition:.12s}
+  tbody tr:hover{background:var(--surface2)}
+  tbody tr.sel{background:var(--brand-soft)}
+  tbody tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--brand)}
+  tbody tr:last-child td{border-bottom:0}
+  .doc{display:flex;align-items:center;gap:11px}
+  .ava{width:34px;height:34px;border-radius:9px;flex:none;display:grid;place-items:center;font-weight:700;font-size:12.5px;color:#fff}
+  .doc .fn{font-weight:600;line-height:1.25}
+  .doc .meta{color:var(--muted);font-size:11.5px}
+  .tname{font-weight:600}
+
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px}
+  .badge .d{width:7px;height:7px;border-radius:50%}
+  .badge.clean{background:var(--clean-soft);color:#067a59} .badge.clean .d{background:var(--clean)}
+  .badge.minor{background:var(--minor-soft);color:#a35d05} .badge.minor .d{background:var(--minor)}
+  .badge.major{background:var(--major-soft);color:#bf2020} .badge.major .d{background:var(--major)}
+  .badge.rejected{background:var(--violet-soft);color:#6320c9} .badge.rejected .d{background:var(--violet)}
+  .state{font-size:12px;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+  .state.confirmed{color:var(--clean)} .state.overridden{color:var(--minor)}
+  .state .d{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .muted{color:var(--muted)}
+
+  .drop{margin:14px 18px;border:1.6px dashed var(--line2);border-radius:11px;padding:14px;text-align:center;color:var(--muted);font-size:12.5px;transition:.15s}
+  .drop.hot{border-color:var(--brand);background:var(--brand-soft);color:var(--brand-ink)}
+
+  .detail{min-height:420px}
+  .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:64px 24px;text-align:center;color:var(--muted)}
+  .empty .ring{width:54px;height:54px;border-radius:14px;background:var(--brand-soft);display:grid;place-items:center;color:var(--brand)}
+  .empty .ring svg{width:26px;height:26px}
+
+  .dhead{padding:18px}
+  .dtitle{display:flex;align-items:center;gap:11px}
+  .dtitle .fn{font-weight:700;font-size:15px}
+  .dsub{color:var(--muted);font-size:12px;margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .tagm{background:var(--surface2);border:1px solid var(--line);border-radius:7px;padding:2px 8px;font-weight:500}
+
+  .stepper{display:flex;align-items:center;padding:4px 18px 18px}
+  .step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;position:relative}
+  .step .c{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;background:var(--clean-soft);color:#067a59;border:2px solid #fff;box-shadow:0 0 0 1px var(--clean);z-index:1}
+  .step.now .c{background:var(--brand);color:#fff;box-shadow:0 0 0 4px var(--brand-soft)}
+  .step .t{font-size:10px;color:var(--muted);font-weight:600;text-align:center}
+  .step.now .t{color:var(--brand-ink)}
+  .step::before{content:"";position:absolute;top:13px;left:-50%;width:100%;height:2px;background:var(--clean)}
+  .step:first-child::before{display:none}
+
+  .sect{padding:6px 18px}
+  .sect h3{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:14px 0 10px;font-weight:700}
+  .fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .f{background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:10px 12px}
+  .f .k{font-size:11px;color:var(--muted);font-weight:600;display:flex;justify-content:space-between;align-items:center}
+  .f .v{font-weight:700;font-size:14px;margin-top:3px;word-break:break-word}
+  .f .v.none{color:var(--faint);font-weight:500}
+  .cbar{width:34px;height:4px;border-radius:3px;background:var(--line2);overflow:hidden}
+  .cbar i{display:block;height:100%;background:var(--clean)}
+  .cbar.low i{background:var(--minor)}
+
+  .issue{display:flex;gap:11px;padding:12px 13px;border-radius:11px;margin-bottom:9px;background:var(--surface2);border:1px solid var(--line);border-left:3px solid var(--line2)}
+  .issue.major{border-left-color:var(--major);background:var(--major-soft)}
+  .issue.minor{border-left-color:var(--minor);background:var(--minor-soft)}
+  .issue .ico{width:18px;height:18px;flex:none;margin-top:1px}
+  .issue .msg{font-weight:600;font-size:13px;color:var(--ink)}
+  .issue .sub{font-size:11px;color:var(--muted);margin-top:3px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+  .pillk{background:rgba(15,23,42,.06);border-radius:6px;padding:1px 7px;font-weight:600}
+  .noissue{display:flex;align-items:center;gap:10px;padding:14px;border-radius:11px;background:var(--clean-soft);color:#067a59;font-weight:600;font-size:13px}
+
+  .reviewbar{margin:6px 18px 20px;padding:14px;border:1px solid var(--line);border-radius:13px;background:var(--surface2)}
+  .reviewbar .lbl{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:8px}
+  .note{width:100%;border:1px solid var(--line2);border-radius:10px;padding:10px 12px;font-size:13px;font-family:inherit;background:#fff}
+  .note:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+  .actions{display:flex;gap:9px;margin-top:11px}
+  .reviewed{margin:6px 18px 20px;padding:13px 15px;border-radius:12px;background:var(--clean-soft);color:#067a59;font-weight:600;font-size:13px;display:flex;align-items:center;gap:9px}
+  .reviewed.ov{background:var(--minor-soft);color:#a35d05}
+
+  .toast{position:fixed;bottom:22px;right:22px;background:var(--ink);color:#fff;padding:13px 18px;border-radius:12px;box-shadow:var(--shadow-lg);font-weight:600;font-size:13px;opacity:0;transform:translateY(10px);transition:.22s;display:flex;align-items:center;gap:9px;z-index:50}
+  .toast.show{opacity:1;transform:none}
+  .toast .d{width:8px;height:8px;border-radius:50%;background:var(--clean)}
+
+  @media(max-width:1100px){ .grid{grid-template-columns:1fr} .stats{grid-template-columns:repeat(2,1fr)} }
+  @media(max-width:760px){ .app{grid-template-columns:1fr} .side{display:none} }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 10.5 12 4l9 6.5M5 9.5V20h14V9.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="14" r="2.4" stroke="#fff" stroke-width="2"/></svg></div>
+      <div><div class="name">LeaseLens</div><div class="sub">lease intake, by exception</div></div>
+    </div>
+    <div class="navlabel">Inbox</div>
+    <div id="nav"></div>
+    <div class="foot">
+      <div class="profilebox">
+        <div class="t">Extraction engine</div>
+        <div class="v"><span class="dotlive"></span><span id="profileName">…</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>Lease Intake</h1>
+        <p>Every incoming lease is classified, extracted, and flagged. Reviewers act only on exceptions.</p>
+      </div>
+      <div class="grow"></div>
+      <div class="select"><select id="sampleSelect"><option value="">Load a sample…</option></select></div>
+      <input type="file" id="fileInput" accept="application/pdf" style="display:none" />
+      <button class="btn" onclick="document.getElementById('fileInput').click()">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0 4 4m-4-4-4 4M5 20h14" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Upload lease
+      </button>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="grid">
+      <section class="card">
+        <div class="hd"><h2>Documents</h2><span class="cnt" id="inboxCount"></span></div>
+        <div class="chips" id="chips"></div>
+        <div class="drop" id="drop">Drag a lease PDF here, or use <b>Upload lease</b> · <span class="muted">flagged rows need a human</span></div>
+        <div style="overflow:auto;max-height:60vh">
+          <table>
+            <thead><tr><th>Document</th><th>Tenant</th><th>Rent</th><th>Verdict</th><th>Review</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card detail">
+        <div class="hd"><h2>Review</h2></div>
+        <div id="detail">
+          <div class="empty">
+            <div class="ring"><svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div><div style="font-weight:700;color:var(--ink)">Select a document</div>
+            <div style="font-size:12.5px">Pick a row to see extracted fields and flags.</div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"><span class="d"></span><span id="toastMsg"></span></div>
+
+<script>
+const $ = s => document.querySelector(s);
+let DOCS=[], FILTER="all", SELECTED=null;
+const AVA=['#2563eb','#7c3aed','#059669','#d97706','#dc2626','#0891b2','#db2777','#0d9488'];
+function money(n){ return n==null?"-":"$"+Number(n).toLocaleString(undefined,{maximumFractionDigits:0}); }
+function initials(s){ if(!s) return "··"; const p=s.trim().split(/\s+/); return ((p[0]||"")[0]+((p[1]||"")[0]||"")).toUpperCase(); }
+function avaColor(s){ let h=0; for(const c of (s||"x")) h=(h*31+c.charCodeAt(0))>>>0; return AVA[h%AVA.length]; }
+function toast(msg){ $("#toastMsg").textContent=msg; const t=$("#toast"); t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1900); }
+const ICON={
+  warnMajor:'<svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  warnMinor:'<svg viewBox="0 0 24 24" fill="none"><path d="M12 8v4m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+};
+
+async function loadProfile(){ const p=await (await fetch("/api/profile")).json(); $("#profileName").textContent=p.extraction_profile; }
+async function loadSamples(){
+  const list=await (await fetch("/samples")).json(); const sel=$("#sampleSelect");
+  list.forEach(n=>{ const o=document.createElement("option"); o.value=n; o.textContent=n.replace(/\.pdf$/,''); sel.appendChild(o); });
+}
+async function loadStats(){
+  const s=await (await fetch("/api/stats")).json(), v=s.by_verdict, st=s.by_state;
+  const card=(n,l,col,soft,svg)=>`<div class="stat"><div class="ic" style="background:${soft}">${svg}</div><div class="n" style="color:${col}">${n}</div><div class="l">${l}</div></div>`;
+  $("#stats").innerHTML=
+    card(s.total,"In inbox","var(--ink)","var(--brand-soft)",'<svg viewBox="0 0 24 24" fill="none"><path d="M3 7h18M3 12h18M3 17h12" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/></svg>')
+   +card(v.clean,"Clean","var(--clean)","var(--clean-soft)",'<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#059669" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+   +card(v.minor,"Minor","var(--minor)","var(--minor-soft)",'<svg viewBox="0 0 24 24" fill="none"><path d="M12 8v4m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="#d97706" stroke-width="2"/></svg>')
+   +card(v.major,"Major","var(--major)","var(--major-soft)",'<svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke="#dc2626" stroke-width="2" stroke-linejoin="round"/></svg>')
+   +card(st.needs_review,"Awaiting review","var(--ink)","var(--violet-soft)",'<svg viewBox="0 0 24 24" fill="none"><path d="M12 7v5l3 2m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"/></svg>');
+}
+function counts(){
+  const c={all:DOCS.length,needs_review:0,major:0,minor:0,clean:0,rejected:0};
+  DOCS.forEach(d=>{ c[d.verdict]++; if(d.review_state==="needs_review") c.needs_review++; }); return c;
+}
+function renderNav(){
+  const c=counts();
+  const items=[["all","Documents","M3 7h18M3 12h18M3 17h12"],["needs_review","Needs review","M12 7v5l3 2"],
+    ["major","Major issues","M12 9v4m0 4h.01"],["minor","Minor issues","M12 8v4m0 4h.01"],
+    ["clean","Clean","M5 13l4 4L19 7"],["rejected","Bounced","M6 6l12 12M6 18 18 6"]];
+  $("#nav").innerHTML=items.map(([k,l,p])=>`
+    <div class="nav ${FILTER===k?'active':''}" onclick="setFilter('${k}')">
+      <svg class="ico" viewBox="0 0 24 24" fill="none"><path d="${p}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      ${l}<span class="ct">${c[k]??0}</span></div>`).join("");
+}
+function renderChips(){
+  const c=counts();
+  const defs=[["all","All"],["needs_review","Needs review"],["major","Major"],["minor","Minor"],["clean","Clean"],["rejected","Bounced"]];
+  $("#chips").innerHTML=defs.map(([k,l])=>`<span class="chip ${FILTER===k?'active':''}" onclick="setFilter('${k}')">${l}<span class="b">${c[k]??0}</span></span>`).join("");
+}
+function setFilter(f){ FILTER=f; renderRows(); renderChips(); renderNav(); }
+function passes(d){ if(FILTER==="all")return true; if(FILTER==="needs_review")return d.review_state==="needs_review"; return d.verdict===FILTER; }
+function renderRows(){
+  const rows=DOCS.filter(passes);
+  $("#inboxCount").textContent=`${rows.length} shown`;
+  $("#rows").innerHTML=rows.map(d=>{
+    const t=d.tenant_name||d.doc_type;
+    return `<tr class="${SELECTED===d.id?'sel':''}" onclick="select('${d.id}')">
+      <td><div class="doc">
+        <div class="ava" style="background:${avaColor(t)}">${initials(d.tenant_name)||'PDF'}</div>
+        <div><div class="fn">${d.filename.replace(/\.pdf$/,'')}</div>
+          <div class="meta">${d.property_address||d.doc_type.replace(/_/g,' ')} · ${d.issue_count} flag(s)${d.ocr_pages>0?' · OCR':''} · ${d.latency_ms}ms</div></div>
+      </div></td>
+      <td>${d.tenant_name?`<span class="tname">${d.tenant_name}</span>`:'<span class="muted">-</span>'}</td>
+      <td>${money(d.monthly_rent)}</td>
+      <td><span class="badge ${d.verdict}"><span class="d"></span>${d.verdict}</span></td>
+      <td><span class="state ${d.review_state}"><span class="d"></span>${d.review_state.replace('_',' ')}</span></td>
+    </tr>`;}).join("") || `<tr><td colspan="5"><div class="empty" style="padding:40px"><div class="muted">No documents match this filter.</div></div></td></tr>`;
+}
+async function loadDocs(){ DOCS=await (await fetch("/api/documents")).json(); renderRows(); renderChips(); renderNav(); }
+
+function stepper(){
+  const names=["Classify","Gate-check","Extract","Validate","Reason","Review"];
+  return `<div class="stepper">`+names.map((n,i)=>`<div class="step ${i===5?'now':''}"><div class="c">${i===5?'★':'✓'}</div><div class="t">${n}</div></div>`).join("")+`</div>`;
+}
+async function select(id){
+  SELECTED=id; renderRows();
+  const d=await (await fetch("/api/documents/"+id)).json();
+  const f=d.result.fields, conf=f.confidence||{};
+  const field=(k,label,val)=>{
+    const cv=conf[k];
+    const bar=cv!=null?`<span class="cbar ${cv<0.8?'low':''}"><i style="width:${Math.round(cv*100)}%"></i></span>`:'';
+    const none=(val==null||val==='-');
+    return `<div class="f"><div class="k"><span>${label}</span>${bar}</div><div class="v ${none?'none':''}">${none?'not found':val}</div></div>`;
+  };
+  const issues=d.result.issues.map(i=>`
+    <div class="issue ${i.severity}"><div class="ico">${i.severity==='major'?ICON.warnMajor:ICON.warnMinor}</div>
+      <div><div class="msg">${i.message}</div>
+        <div class="sub"><span class="pillk">${i.kind}</span><span>via ${i.source}</span>${i.confidence!=null?`<span>· ${Math.round(i.confidence*100)}% conf</span>`:''}</div></div></div>`).join("")
+    || `<div class="noissue"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M5 13l4 4L19 7" stroke="#059669" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>No issues. Clean lease.</div>`;
+  const reviewed=d.review_state!=="needs_review";
+  const term=(f.lease_start||'?')+' → '+(f.lease_end||'?')+(f.term_months?` · ${f.term_months}mo`:'');
+  $("#detail").innerHTML=`
+    <div class="dhead">
+      <div class="dtitle">
+        <div class="ava" style="background:${avaColor(f.tenant_name||d.filename)}">${initials(f.tenant_name)||'PDF'}</div>
+        <div><div class="fn">${d.filename.replace(/\.pdf$/,'')}</div>
+          <div class="dsub"><span class="badge ${d.result.verdict}"><span class="d"></span>${d.result.verdict}</span>
+            <span class="tagm">${d.result.doc_type.replace(/_/g,' ')} ${Math.round(d.result.doc_type_confidence*100)}%</span>
+            <span class="tagm">${d.result.extraction_profile}</span>
+            ${d.result.ocr_pages>0?`<span class="tagm" style="background:var(--violet-soft);color:#6320c9;border-color:#e2d4fb">OCR · ${d.result.ocr_pages} pg</span>`:''}
+            <span class="tagm">${d.result.latency_ms}ms</span>
+            <a href="/api/documents/${d.id}/pdf" target="_blank">view source ↗</a></div></div>
+      </div>
+    </div>
+    ${stepper()}
+    ${d.result.doc_type==='residential_lease'?`
+    <div class="sect"><h3>Extracted fields</h3>
+      <div class="fields">
+        ${field('tenant_name','Tenant',f.tenant_name)}
+        ${field('landlord_name','Landlord',f.landlord_name)}
+        ${field('property_address','Address',f.property_address?f.property_address+(f.unit?` · Unit ${f.unit}`:''):null)}
+        ${field('monthly_rent','Monthly rent',f.monthly_rent!=null?money(f.monthly_rent):null)}
+        ${field('security_deposit','Deposit',f.security_deposit!=null?money(f.security_deposit):null)}
+        ${field('late_fee','Late fee',f.late_fee!=null?money(f.late_fee):null)}
+        ${field('lease_start','Term',f.lease_start?term:null)}
+        ${field('tenant_signed','Signatures',f.tenant_signed==null?null:(f.tenant_signed?'Tenant ✓':'Tenant ✗')+(f.landlord_signed?' · Landlord ✓':' · Landlord ✗'))}
+      </div></div>`:''}
+    <div class="sect"><h3>Flagged for review · ${d.result.issues.length}</h3>${issues}</div>
+    ${reviewed
+      ? `<div class="reviewed ${d.review_state==='overridden'?'ov':''}">
+           <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+           ${d.review_state==='confirmed'?'Confirmed':'Overridden'} by reviewer${d.reviewer_note?`: “${d.reviewer_note}”`:''}</div>`
+      : `<div class="reviewbar"><div class="lbl">Reviewer decision</div>
+           <input class="note" id="note" type="text" placeholder="Add a note (optional)…" />
+           <div class="actions">
+             <button class="btn good" onclick="review('${id}','confirm')">✓ Confirm</button>
+             <button class="btn warn" onclick="review('${id}','override')">Override</button>
+           </div></div>`}`;
+}
+async function review(id,action){
+  const note=$("#note")?$("#note").value:null;
+  await fetch(`/api/documents/${id}/review`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action,note})});
+  toast(action==="confirm"?"Document confirmed":"Document overridden");
+  await loadDocs(); await loadStats(); select(id);
+}
+async function uploadFile(file){
+  toast("Processing "+file.name+"…");
+  const fd=new FormData(); fd.append("file",file);
+  const res=await fetch("/api/upload",{method:"POST",body:fd});
+  if(!res.ok){ toast("Upload failed: "+(await res.text())); return; }
+  const d=await res.json();
+  await loadDocs(); await loadStats(); select(d.id);
+  toast("Processed → "+d.result.verdict);
+}
+$("#fileInput").addEventListener("change",e=>{ if(e.target.files[0]) uploadFile(e.target.files[0]); e.target.value=""; });
+$("#sampleSelect").addEventListener("change",async e=>{
+  const name=e.target.value; if(!name) return;
+  const blob=await (await fetch("/samples/"+name)).blob();
+  uploadFile(new File([blob],name,{type:"application/pdf"})); e.target.value="";
+});
+const drop=$("#drop");
+window.addEventListener("dragover",e=>{e.preventDefault(); drop.classList.add("hot");});
+window.addEventListener("dragleave",e=>{ if(e.relatedTarget===null) drop.classList.remove("hot"); });
+window.addEventListener("drop",e=>{ e.preventDefault(); drop.classList.remove("hot"); if(e.dataTransfer.files[0]) uploadFile(e.dataTransfer.files[0]); });
+
+(async function init(){ await loadProfile(); await loadSamples(); await loadStats(); await loadDocs(); })();
+</script>
+</body>
+</html>

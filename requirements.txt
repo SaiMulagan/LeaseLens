@@ -1,0 +1,18 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+python-multipart>=0.0.9
+pdfplumber>=0.11
+reportlab>=4.1
+Pillow>=10.0
+
+# OCR for scanned (image-only) leases. The Python packages below are enough to
+# turn OCR on, but they also need two system binaries:
+#   macOS:  brew install tesseract poppler
+#   Ubuntu: apt-get install tesseract-ocr poppler-utils
+# Without them the app still runs — scanned pages are flagged "needs OCR".
+pytesseract>=0.3.10
+pdf2image>=1.17
+
+# Optional: set OPENAI_API_KEY and `pip install openai` to enable the LLM
+# extraction/reasoning profile. The app runs fully offline without it.
