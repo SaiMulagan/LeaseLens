@@ -1,5 +1,7 @@
 # LeaseLens
 
+demo video https://youtu.be/-iREJ4slK1I
+
 **AI intake for the receiving side of residential leases.**
 
 Property managers receive signed leases as PDFs, prose, not forms, and a human
