@@ -3,7 +3,7 @@
 <img width="960" height="540" alt="My Movie 1 (2)" src="https://github.com/user-attachments/assets/95326271-b870-4201-af93-713af0697d07" />
 
 
-demo video https://youtu.be/-iREJ4slK1I
+Full Demo Video https://youtu.be/-iREJ4slK1I
 
 **AI intake for the receiving side of residential leases.**
 
